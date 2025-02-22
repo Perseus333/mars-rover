@@ -69,6 +69,7 @@ short getDistance() {
     // Temp Code for testing max values
     // long responseTime = MAX_RESPONSE_TIME;
 
+    // This is a comment
     short distance; 
     if (responseTime > MAX_RESPONSE_TIME) {
         // sets distance to be 2^15 which is the max number of a `short` type
