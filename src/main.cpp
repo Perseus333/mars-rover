@@ -11,9 +11,6 @@ which arduino already replaces with `byte`
 */
 #include <stdint.h>
 
-// The necessary hardware libraries
-#include "Arduino.h"
-
 // Include the custom libraries (header files)
 #include "utils.h"
 #include "constants.h"

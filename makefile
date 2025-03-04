@@ -10,8 +10,6 @@ LDFLAGS = -lm
 
 # Source files
 SRC = src/main.cpp src/hardware.cpp src/utils.cpp
-# Output executable
-OUT = bin/main
 
 #Arguments, default values
 SCANS_PER_SWIPE = 10
@@ -22,8 +20,13 @@ INITIAL_CAPACITY = 255
 # Fakes importing the arduino functions
 TESTING := true
 ifeq ($(TESTING), true)
-	CFLAGS += -I./fake
+	LDFLAGS += -I./fake
+	OUT = build/main_testing
+else
+	OUT = build/main_arduino
 endif
+
+
 
 # Default target
 all: $(OUT)
@@ -31,8 +34,8 @@ all: $(OUT)
 # Build the executable
 # You can change the arguments by defining them after `make`. E.g.:
 # make SCANS_PER_SWIPE=5 MAX_MEMORY=100 INITIAL_CAPACITY=50
-$(OUT): $(SRC) | bin
+$(OUT): $(SRC) | build
 	$(CC) $(CFLAGS) $(SRC) $(LDFLAGS) -o $(OUT) -DSCANS_PER_SWIPE=$(SCANS_PER_SWIPE) -DMAX_MEMORY=$(MAX_MEMORY) -DINITIAL_CAPACITY=$(INITIAL_CAPACITY) -DTESTING=$(TESTING)
 
-bin:
-	mkdir -p bin
+build:
+	mkdir -p build

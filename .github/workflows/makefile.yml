@@ -1,12 +1,11 @@
 name: Makefile CI
 
 on:
-  push:
-    branches-ignore:
-      - docs
-  pull_request:
-    branches: ["master"]
-  workflow_dispatch:
+    push:
+        branches: ["master"]
+    pull_request:
+        branches: ["master"]
+    workflow_dispatch:
 
 jobs:
   build:
@@ -17,8 +16,40 @@ jobs:
       - name: Install dependencies
         run: make
 
+  arduino_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: Configure Arduino CLI
+        run: |
+          arduino-cli config init
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+
+      - name: Install Required Libraries
+        run: |
+          arduino-cli lib install "Servo"
+
+      - name: Compile Arduino Code
+        run: |
+          mkdir -p build
+          arduino-cli compile --fqbn arduino:avr:uno --output-dir build src/main.cpp src/hardware.cpp src/utils.cpp
+
+      - name: Upload Compiled Firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: arduino-firmware
+          path: build/*.hex
+
   release:
-    needs: build
+    needs: [build, arduino_build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
@@ -27,15 +58,9 @@ jobs:
         
       - name: Build EXE (Arduino)
         run: make TESTING=false
-          
-      - name: Rename EXE (Arduino)
-        run: mv bin/main.exe meme_arduino.exe
 
       - name: Build EXE (TESTING)
-        run: make
-          
-      - name: Rename EXE (TESTING)
-        run: mv bin/main.exe meme_testing.exe
+        run: make TESTING=true
 
       - name: Get latest tag
         id: get_tag
@@ -55,7 +80,7 @@ jobs:
           name: Release ${{ env.tag }}
           body_path: release_notes.md
           files: |
-            meme_testing.exe
-            meme_arduino.exe
+            main_testing.exe
+            main_arduino.exe
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}       
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

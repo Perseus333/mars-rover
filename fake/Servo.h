@@ -1,0 +1,1 @@
+// Does nothing, fake functions already in Arduino.h
