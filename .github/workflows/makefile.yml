@@ -42,6 +42,7 @@ jobs:
       - name: Compile Arduino Code
         run: |
           mkdir -p build
+          pwd
           arduino-cli compile -b arduino:avr:uno --output-dir build --build-property "build extra_flags=-I./include" src
 
       - name: Upload Compiled Firmware
