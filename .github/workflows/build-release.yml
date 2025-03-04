@@ -9,17 +9,6 @@ on:
     workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Create build folder
-        run: |
-          mkdir -p build
-          ls build
-      - name: Install dependencies
-        run: make
-
   arduino_build:
     runs-on: ubuntu-latest
     steps:
@@ -63,7 +52,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      - name: Create build folder
+        run: |
+          mkdir -p build
+          ls build
       - name: Build EXE (TESTING)
         run: |
           make TESTING=true
@@ -76,7 +68,7 @@ jobs:
           path: build/main_testing.exe
 
   release:
-    needs: [build, arduino_build, testing_build]
+    needs: [arduino_build, testing_build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
@@ -87,6 +79,10 @@ jobs:
         id: get_tag
         run: echo "tag=v$(date +'%Y.%m.%d-%H%M%S')" >> $GITHUB_ENV
       
+      - name: Generate release notes
+        run: |
+          git log --pretty=format:"- %h %s (%an, %ad)" --date=short $(git describe --tags --abbrev=0 @^)..@ > release_notes.md
+      
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -95,6 +91,7 @@ jobs:
         with:
           tag_name: ${{ env.tag }}
           release_name: Release ${{ env.tag }}
+          body_path: release_notes.md
           draft: false
           prerelease: false
 
