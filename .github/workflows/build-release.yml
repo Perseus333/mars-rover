@@ -1,9 +1,10 @@
-name: Makefile CI
+name: Build and Release
+
+permissions:
+  contents: write
 
 on:
     push:
-        branches: ["master"]
-    pull_request:
         branches: ["master"]
     workflow_dispatch:
 
@@ -82,7 +83,7 @@ jobs:
           name: Release ${{ env.tag }}
           body_path: release_notes.md
           files: |
-            build/main_testing.exe
-            build/main_arduino.hex
+            ./build/main_testing.exe
+            ./build/main_arduino.hex
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
