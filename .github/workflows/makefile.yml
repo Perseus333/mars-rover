@@ -82,7 +82,7 @@ jobs:
           name: Release ${{ env.tag }}
           body_path: release_notes.md
           files: |
-            main_testing.exe
-            main_arduino.exe
+            build/main_testing.exe
+            build/main_arduino.hex
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -26,8 +26,6 @@ else
 	OUT = build/main_arduino
 endif
 
-
-
 # Default target
 all: $(OUT)
 
