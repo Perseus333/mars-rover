@@ -142,7 +142,7 @@ int scan() {
 
 // setup and loop functions are only for demonstrative purposes
 
-void setup() {
+inline void setup() {
   
 	// Define all DC Motor pins as OUTPUT
 	pinMode(ENABLE_RIGHT, OUTPUT);
@@ -180,7 +180,7 @@ void setup() {
 
 }
 
-void loop() {
+inline void loop() {
     int avgDistance = scan();
     if (avgDistance > 500) {
     	runCommand(lastCommand);

@@ -168,7 +168,7 @@ void moveVehicle() {
 }
 
 // The setup function in arduino
-void setup_() {
+void setup() {
 
     currentPos.x = 0;
     currentPos.y = 0;
@@ -181,7 +181,7 @@ void setup_() {
 }
 
 // The loop function in arduino
-void loop_() {
+void loop() {
     scanEnvironment();
     updateObstacleDisplay(SCANS_PER_SWIPE);
     pathFind();
@@ -192,11 +192,11 @@ void loop_() {
 // it's just here for testing purposes
 int main() {
 
-    setup_();
+    setup();
 
     // same as `while true`, but without having to include stdbool.h
     for (;;) {
-        loop_();
+        loop();
         // waits for user input (testing purposes only)
         char ch = getchar();
         if (ch) {} // To not raise compiler warning for unused variable
