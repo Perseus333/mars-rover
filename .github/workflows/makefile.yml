@@ -41,7 +41,7 @@ jobs:
 
       - name: Compile Arduino Code
         run: |
-          mkdir -p build
+          mkdir build
           pwd
           arduino-cli compile -b arduino:avr:uno sketch --output-dir build --library ./include --build-property build.extra_flags="-DTESTING=false -DSCANS_PER_SWIPE=10" 
 
@@ -50,6 +50,10 @@ jobs:
         with:
           name: arduino-firmware
           path: build/*.hex
+      
+      - name: Rename Hex
+        run: |
+          mv build/sketch.ino.hex main_arduino.hex
 
   release:
     needs: [build, arduino_build]
