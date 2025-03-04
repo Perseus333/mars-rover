@@ -21,7 +21,7 @@ INITIAL_CAPACITY = 255
 TESTING := true
 ifeq ($(TESTING), true)
 	LDFLAGS += -I./fake
-	OUT = build/main_testing
+	OUT = build/main_testing.exe
 else
 	OUT = build/main_arduino
 endif
