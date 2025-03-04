@@ -1,0 +1,73 @@
+name: Makefile CI
+
+on:
+  push:
+    branches-ignore:
+      - docs
+  pull_request:
+    branches: ["master"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: ./configure
+
+      - name: Install dependencies
+        run: make
+
+      - name: Run check
+        run: make check
+
+      - name: Run distcheck
+        run: make distcheck
+
+  release:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: ./configure
+        
+      - name: Build EXE (Arduino)
+        run: make TESTING=false
+          
+      - name: Rename EXE (Arduino)
+        run: mv bin/main.exe meme_arduino.exe
+
+      - name: Build EXE (TESTING)
+        run: make
+          
+      - name: Rename EXE (TESTING)
+        run: mv bin/main.exe meme_testing.exe
+
+      - name: Get latest tag
+        id: get_tag
+        run: echo "tag=v$(date +'%Y.%m.%d-%H%M%S')" >> $GITHUB_ENV
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+            echo "### Changes in this release" > release_notes.md
+            echo "" >> release_notes.md
+            git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD >> release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.tag }}
+          name: Release ${{ env.tag }}
+          body_path: release_notes.md
+          files: |
+            meme_testing.exe
+            meme_arduino.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}       
