@@ -1,4 +1,4 @@
-// map.c
+//main.cpp
 // The main file for the rover
 
 #include <stdio.h>
