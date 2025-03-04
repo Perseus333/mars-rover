@@ -28,5 +28,8 @@ all: $(OUT)
 # Build the executable
 # You can change the arguments by defining them after `make`. E.g.:
 # make SCANS_PER_SWIPE=5 MAX_MEMORY=100 INITIAL_CAPACITY=50
-$(OUT): $(SRC)
+$(OUT): $(SRC) | bin
 	$(CC) $(CFLAGS) $(SRC) $(LDFLAGS) -o $(OUT) -DSCANS_PER_SWIPE=$(SCANS_PER_SWIPE) -DMAX_MEMORY=$(MAX_MEMORY) -DINITIAL_CAPACITY=$(INITIAL_CAPACITY) -DTESTING=$(TESTING)
+
+bin:
+	mkdir -p bin
