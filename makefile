@@ -5,6 +5,9 @@ CC = gcc
 CFLAGS   = -g -grecord-gcc-switches -O2 -Wall -Wextra -pedantic
 CFLAGS  += -I./include
 
+# Adds the math library for trig calculations
+LDFLAGS = -lm
+
 # Source files
 SRC = src/main.cpp src/hardware.cpp src/utils.cpp
 # Output executable
