@@ -68,25 +68,46 @@ jobs:
       - name: Get latest tag
         id: get_tag
         run: echo "tag=v$(date +'%Y.%m.%d-%H%M%S')" >> $GITHUB_ENV
-
-      - name: Generate release notes
-        id: release_notes
-        run: |
-            echo "### Changes in this release" > release_notes.md
-            echo "" >> release_notes.md
-            git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD >> release_notes.md
-            
-      - name: Verify Build Files
-        run: ls -R build
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.tag }}
-          name: Release ${{ env.tag }}
-          body_path: release_notes.md
-          files: |
-              $GITHUB_WORKSPACE/build/main_testing.exe
-              $GITHUB_WORKSPACE/build/main_arduino.hex
+          release_name: Release ${{ env.tag }}
+          draft: false
+          prerelease: false
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build
+
+      - name: Download Arduino Build
+        uses: actions/download-artifact@v4
+        with:
+          name: arduino-firmware
+          path: build
+
+      - name: Upload EXE
+        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/main_testing.exe
+          asset_name: main_testing.exe
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Arduino HEX
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/main_arduino.hex
+          asset_name: main_arduino.hex
+          asset_content_type: application/octet-stream
