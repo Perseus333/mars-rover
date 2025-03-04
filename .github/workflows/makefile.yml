@@ -42,7 +42,7 @@ jobs:
       - name: Compile Arduino Code
         run: |
           mkdir -p build
-          arduino-cli compile -b arduino:avr:uno --output-dir build --build-property "build extra_flags=-I/include" src
+          arduino-cli compile -b arduino:avr:uno --output-dir build --build-property "build extra_flags=-I./include" src
 
       - name: Upload Compiled Firmware
         uses: actions/upload-artifact@v4
