@@ -13,7 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      - name: Create build folder
+        run: |
+          mkdir -p build
+          ls build
       - name: Install dependencies
         run: make
 
@@ -62,7 +65,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build EXE (TESTING)
-        run: make TESTING=true
+        run: |
+          make TESTING=true
+          ls build
       
       - name: Upload Compiled Binary
         uses: actions/upload-artifact@v4
@@ -71,7 +76,7 @@ jobs:
           path: build/main_testing.exe
 
   release:
-    needs: [build, arduino_build]
+    needs: [build, arduino_build, testing_build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
