@@ -43,7 +43,7 @@ jobs:
         run: |
           mkdir -p build
           pwd
-          arduino-cli compile -b arduino:avr:uno --output-dir build --build-property "build extra_flags=-I./include" src
+          arduino-cli compile -b arduino:avr:uno sketch --output-dir build --library ./include --build-property build.extra_flags="-DTESTING=false -DSCANS_PER_SWIPE=10" 
 
       - name: Upload Compiled Firmware
         uses: actions/upload-artifact@v4

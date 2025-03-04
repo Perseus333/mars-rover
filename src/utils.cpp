@@ -4,7 +4,7 @@
 #include "constants.h"
 
 float toRadians(short angleInDegrees) {
-    float angleInRadians = angleInDegrees * PI / 180;
+    float angleInRadians = angleInDegrees * PI_NUM / 180;
     return angleInRadians;
 }
 

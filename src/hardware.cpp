@@ -133,7 +133,7 @@ int scan() {
       	Serial.print(", ");
 	}
   	Serial.println("");
-	delay_(2); // Remove the underscore ("_") when running
+	delayMicroseconds(2000); // Remove the underscore ("_") when running
 	// Returns to the original position
 	sensorServo.write(0);
   	int avgDistance = (int)(distanceSum / SCANS_PER_SWIPE);
@@ -142,7 +142,7 @@ int scan() {
 
 // setup and loop functions are only for demonstrative purposes
 
-inline void setup() {
+void hardwareSetup() {
   
 	// Define all DC Motor pins as OUTPUT
 	pinMode(ENABLE_RIGHT, OUTPUT);
@@ -180,7 +180,7 @@ inline void setup() {
 
 }
 
-inline void loop() {
+void hardwareLoop() {
     int avgDistance = scan();
     if (avgDistance > 500) {
     	runCommand(lastCommand);

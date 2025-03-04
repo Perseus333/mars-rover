@@ -4,7 +4,7 @@
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
 
-const float PI = 3.141592;
+const float PI_NUM = 3.141592;
 const float SPEED_OF_SOUND = 0.343f; // mm/s
 const short FULL_ROTATION = 180; // in degrees
 

@@ -8,5 +8,7 @@ void readCommand();
 void runCommand(char command, bool log);
 int detectDistance();
 int scan();
+void hardwareSetup();
+void hardwareLoop();
 
 #endif // HARDWARE_H
