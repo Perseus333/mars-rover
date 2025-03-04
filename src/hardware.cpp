@@ -1,8 +1,9 @@
 // hardware.cpp
 // Functions related to physical components
 
-
-#include "Arduino.h"
+if (TESTING) {
+	#include "Arduino.h"
+}
 
 // You can paste the code below this into the arduino setup and it will work right off the bat
 
