@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include <Servo.h>
+#include "utils.h"
+#include "constants.h"
 
 
 // You can paste the code below this into the arduino setup and it will work right off the bat
@@ -13,6 +15,8 @@
 // You can paste the code below this into the arduino setup and it will work right off the bat
 
 // Defining the pins
+// The pins are based on ../assets/board_ref.jpg
+// F: forwards; B: backwards
 const byte ENABLE_RIGHT = 3;
 const byte RIGHT_B = 4;
 const byte RIGHT_F = 2;
@@ -27,76 +31,12 @@ const byte LEFT_LED = 13;
 const byte TRIG = 6;
 const byte ECHO = 5;
 
+const byte SERVO_PIN = 11;
+
+unsigned short obstacleDistance;
+
 // Configures the servo
 Servo sensorServo;
-
-// Speed of sound - useful for calculating distances with HC-SR04
-const float SPEED_OF_SOUND = 0.343f; // mm/s
-
-char lastCommand = 'f';
-
-// Reads a character and interprets it as a command
-
-char readCommand() {
-    char command = ' ';
-    if (Serial.available() > 0) {
-        command = Serial.read();
-        Serial.print("Received command: ");
-        Serial.println(command);
-    }
-    return command;
-}
-
-// Executes the instructions
-void runCommand(char command, bool log = true) {
-	// A switch statement is a more readable version
-	// of the else if
-	switch (command) {
-
-	// forward
-	case 'f':
-		digitalWrite(LEFT_B, LOW);
-		digitalWrite(LEFT_F, HIGH);
-		digitalWrite(RIGHT_B, LOW);
-		digitalWrite(RIGHT_F, HIGH);
-		digitalWrite(LEFT_LED, HIGH);
-		digitalWrite(RIGHT_LED, HIGH);
-		break;
-
-	// backwards
-	case 'b':
-		digitalWrite(LEFT_B, HIGH);
-		digitalWrite(LEFT_F, LOW);
-		digitalWrite(RIGHT_B, HIGH);
-		digitalWrite(RIGHT_F, LOW);
-		digitalWrite(LEFT_LED, LOW);
-		digitalWrite(RIGHT_LED, LOW);
-		break;
-
-	// right
-	case 'r':
-		digitalWrite(LEFT_B, HIGH);
-		digitalWrite(LEFT_F, LOW);
-		digitalWrite(RIGHT_B, LOW);
-		digitalWrite(RIGHT_F, HIGH);
-		digitalWrite(LEFT_LED, LOW);
-		digitalWrite(RIGHT_LED, HIGH);
-		break;
-
-	// left
-	case 'l':
-		digitalWrite(LEFT_B, LOW);
-		digitalWrite(LEFT_F, HIGH);
-		digitalWrite(RIGHT_B, HIGH);
-		digitalWrite(RIGHT_F, LOW);
-		digitalWrite(LEFT_LED, HIGH);
-		digitalWrite(RIGHT_LED, LOW);
-		break;
-	}
-  	if (log) {
-  		lastCommand = command;
-    }
-}
 
 int detectDistance() {
 	long duration;
@@ -113,31 +53,35 @@ int detectDistance() {
 	distance = duration * SPEED_OF_SOUND / 2;
 
 	// To avoid interferences from previous waves
-	delayMicroseconds(100);
+	delay(1);
 
 	return distance;
 }
 
 // Does a full swipe
 // The sensor will be mounted on the servo
-int scan() {
-	int distances[SCANS_PER_SWIPE] = {};
-  	int distanceSum = 0;
-	sensorServo.write(180);
-	Serial.print("d: ");
-	for (int i = 0; i < SCANS_PER_SWIPE; i++) {
-		distances[i] = detectDistance();
-		distanceSum += distances[i];
-		// Prints the distance to the obstacle;
-		Serial.print(distances[i]);
-      	Serial.print(", ");
-	}
-  	Serial.println("");
-	delayMicroseconds(2000); // Remove the underscore ("_") when running
-	// Returns to the original position
+void swipeScan(short *distanceReport) {
+    // Angles are in degrees (0-360º)
+    const short ANGLE_STEP = FULL_ROTATION / SCANS_PER_SWIPE;
+	// Start always at 0 degrees
 	sensorServo.write(0);
-  	int avgDistance = (int)(distanceSum / SCANS_PER_SWIPE);
-  	return avgDistance;
+
+    for (uint8_t i = 1; i <= SCANS_PER_SWIPE; i++) {
+        short obstacleDistance = detectDistance();
+		distanceReport[i] = obstacleDistance;
+
+		if (DEBUG && !TESTING) {
+			// Prints the distance to the obstacle;
+			Serial.print(obstacleDistance);
+			Serial.print(", ");
+			// on the last one, print new line
+			if (i == SCANS_PER_SWIPE - 1) Serial.println("");
+		}
+		// Delay between scans just in case
+		delay(10);
+		short sensorRotation = ANGLE_STEP * i;
+		sensorServo.write(sensorRotation);
+    }
 }
 
 // setup and loop functions are only for demonstrative purposes
@@ -169,24 +113,6 @@ void hardwareSetup() {
 	// Initializes the Serial Monitor (terminal)
 	Serial.begin(9600);
 
-	// Prints all available commands
-	Serial.println("Available commands:");
-	Serial.println("f: Forwards");
-	Serial.println("b: Backwards");
-	Serial.println("r: Turn right");
-	Serial.println("l: Turn left");
+	sensorServo.attach(SERVO_PIN);
 
-	sensorServo.attach(11);
-
-}
-
-void hardwareLoop() {
-    int avgDistance = scan();
-    if (avgDistance > 500) {
-    	runCommand(lastCommand);
-      	runCommand(readCommand());
-    }
-    else {
-      	runCommand('b', false);
-    }
 }

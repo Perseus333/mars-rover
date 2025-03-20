@@ -62,7 +62,7 @@ inline void analogWrite(byte pin, int arg) {
     (void)pin;
     (void)arg;
 }
-inline void delay_(int time) {
+inline void delay(int time) {
     (void)time;
 }
 inline void delayMicroseconds(int time) {

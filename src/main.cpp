@@ -40,6 +40,10 @@ angles and rotations: short (2 bytes)
 #define INITIAL_CAPACITY 255 // 2^8-1; max values for 1 byte
 #endif
 
+#ifndef DEBUG
+#define DEBUG false
+#endif
+
 // Initializing global variables
 Position currentPos;
 Position* obstacles = NULL;
@@ -68,6 +72,13 @@ short getDistanceTESTING() {
     }
 
     return distance;
+}
+
+short* scanEnvironment() {
+    static short distanceReport[SCANS_PER_SWIPE];
+    swipeScan(distanceReport);
+    
+    return distanceReport;
 }
 
 Position generateObstacle(DataPacket data) {
@@ -112,25 +123,6 @@ void appendObstacle(Position obstacle) {
     obstacles[obstacleAmount].y = obstacle.y;
 
     obstacleAmount++;
-}
-
-void scanEnvironment() {
-    // Angles are in degrees (0-360º)
-    const short ANGLE_STEP = FULL_ROTATION / SCANS_PER_SWIPE;
-    
-    for (uint8_t i = 1; i <= SCANS_PER_SWIPE; i++) {
-        short obstacleDistance = (TESTING) ? getDistanceTESTING() : detectDistance();
-        short sensorRotation = ANGLE_STEP * i;
-        
-        DataPacket positionFeedback;
-        positionFeedback.currentPos = currentPos;
-        positionFeedback.obstacleDistance = obstacleDistance;
-        positionFeedback.sensorRotation = sensorRotation;
-        positionFeedback.vehicleRotation = vehicleRotation;
-        
-        Position obstaclePosition = generateObstacle(positionFeedback);
-        appendObstacle(obstaclePosition);
-    }
 }
 
 // Updates the obstacle map with the obstacles that were detected

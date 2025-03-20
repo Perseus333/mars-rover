@@ -4,11 +4,8 @@
 #ifndef HARDWARE_H
 #define HARDWARE_H
 
-void readCommand();
-void runCommand(char command, bool log);
 int detectDistance();
-int scan();
+int swipeScan(short *reportForm);
 void hardwareSetup();
-void hardwareLoop();
 
 #endif // HARDWARE_H
