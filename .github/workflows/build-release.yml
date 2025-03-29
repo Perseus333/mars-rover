@@ -105,8 +105,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/main_testing.exe
-          asset_name: main_testing.exe
+          asset_path: build/main.exe
+          asset_name: main.exe
           asset_content_type: application/octet-stream
       
       - name: Upload Arduino HEX
@@ -115,6 +115,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/main_arduino.hex
-          asset_name: main_arduino.hex
+          asset_path: build/skethc.ino.hex
+          asset_name: sketch.ino.hex
           asset_content_type: application/octet-stream
