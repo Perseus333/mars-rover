@@ -34,17 +34,13 @@ jobs:
 
       - name: Compile Arduino Code
         run: |
-          arduino-cli compile -b arduino:avr:uno sketch --output-dir build --library ./include --build-property build.extra_flags="-DTESTING=false -DSCANS_PER_SWIPE=10" 
-          
-      - name: Rename Hex
-        run: |
-          mv build/sketch.ino.hex build/main_arduino.hex
+          make arduino
 
       - name: Upload Compiled Firmware
         uses: actions/upload-artifact@v4
         with:
           name: main_arduino
-          path: build/main_arduino.hex
+          path: build/sketch.ino.hex
 
   
   testing_build:
@@ -52,20 +48,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Create build folder
-        run: |
-          mkdir -p build
-          ls build
+
       - name: Build EXE (TESTING)
         run: |
-          make TESTING=true
-          ls build
-      
+          make bin
+          
       - name: Upload Compiled Binary
         uses: actions/upload-artifact@v4
         with:
           name: main_testing
-          path: build/main_testing.exe
+          path: build/main.exe
 
   release:
     needs: [arduino_build, testing_build]
