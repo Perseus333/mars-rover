@@ -70,7 +70,7 @@ void swipeScan(short *distanceReport) {
         short obstacleDistance = detectDistance();
 		distanceReport[i] = obstacleDistance;
 
-		if (DEBUG && !TESTING) {
+		if (DEBUG) {
 			// Prints the distance to the obstacle;
 			Serial.print(obstacleDistance);
 			Serial.print(", ");

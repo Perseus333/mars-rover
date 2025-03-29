@@ -5,7 +5,7 @@
 #define HARDWARE_H
 
 int detectDistance();
-int swipeScan(short *reportForm);
+void swipeScan(short *distanceReport);
 void hardwareSetup();
 
 #endif // HARDWARE_H

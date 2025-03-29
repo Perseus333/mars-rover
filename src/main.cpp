@@ -169,7 +169,7 @@ void mainSetup() {
     obstacles = (Position*)malloc(INITIAL_CAPACITY * sizeof(Position));
 
     // TEMPORARY - To initialize the time for "random" numbers for `getDistance()`
-    srand(clock());
+    // srand(clock());
 }
 
 // The loop function in arduino
