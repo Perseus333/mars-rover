@@ -19,8 +19,6 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
           echo "$HOME/bin" >> $GITHUB_PATH
-          echo "/home/runner/work/MEME_software/MEME_software/bin" >> $GITHUB_PATH
-          export PATH=$PATH:/home/runner/work/MEME_software/MEME_software/bin
 
       - name: Configure Arduino CLI
         run: |
@@ -36,31 +34,14 @@ jobs:
         run: |
           make arduino
 
-      - name: Upload Compiled Firmware
+      - name: Upload Compiled Firmware as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: main_arduino
+          name: arduino_firmware
           path: build/sketch.ino.hex
 
-  
-  testing_build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build EXE (TESTING)
-        run: |
-          make bin
-          
-      - name: Upload Compiled Binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: main_testing
-          path: build/main.exe
-
   release:
-    needs: [arduino_build, testing_build]
+    needs: arduino_build
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
@@ -69,11 +50,11 @@ jobs:
 
       - name: Get latest tag
         id: get_tag
-        run: echo "tag=v$(date +'%Y.%m.%d-%H%M%S')" >> $GITHUB_ENV
+        run: echo "TAG=v$(date +'%Y.%m.%d-%H%M%S')" >> $GITHUB_ENV
       
       - name: Generate release notes
         run: |
-          git log --pretty=format:"- %h %s (%an, %ad)" --date=short $(git describe --tags --abbrev=0 @^)..@ > release_notes.md
+          git log --pretty=format:"- %h %s (%an, %ad)" --date=short $(git describe --tags --abbrev=0 @^ 2>/dev/null || echo HEAD) > release_notes.md
       
       - name: Create Release
         id: create_release
@@ -81,33 +62,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.tag }}
-          release_name: Release ${{ env.tag }}
+          tag_name: ${{ env.TAG }}
+          release_name: Release ${{ env.TAG }}
           body_path: release_notes.md
           draft: false
           prerelease: false
 
-      - name: Download Compiled Binary
-        uses: actions/download-artifact@v4
-        with:
-          name: main_testing
-          path: build
-
       - name: Download Arduino Build
         uses: actions/download-artifact@v4
         with:
-          name: main_arduino
+          name: arduino
           path: build
-
-      - name: Upload EXE
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/main.exe
-          asset_name: main.exe
-          asset_content_type: application/octet-stream
       
       - name: Upload Arduino HEX
         uses: actions/upload-release-asset@v1
@@ -115,6 +80,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/skethc.ino.hex
+          asset_path: build/sketch.ino.hex
           asset_name: sketch.ino.hex
           asset_content_type: application/octet-stream
