@@ -19,6 +19,8 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
           echo "$HOME/bin" >> $GITHUB_PATH
+          echo "/home/runner/work/MEME_software/MEME_software/bin" >> $GITHUB_PATH
+          export PATH=$PATH:/home/runner/work/MEME_software/MEME_software/bin
 
       - name: Configure Arduino CLI
         run: |
