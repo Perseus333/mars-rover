@@ -24,7 +24,6 @@ DEBUG = false
 
 # Specifies the default output when creating the binary
 OUT = build/main
-ARDUINO_OUT = build/sketch.ino.hex
 
 # Default target
 all: bin arduino
@@ -42,8 +41,8 @@ $(OUT): $(SRC)
 
 # Builds the arduino machine code (.hex)
 # This can directly be flashed into the arduino without requiring compilation
-arduino: $(ARDUINO_OUT)
-$(ARDUINO_OUT):
+.PHONY: arduino
+arduino:
 	arduino-cli compile -b arduino:avr:uno --output-dir build \
 	--library include sketch/sketch.ino \
 		--build-property build.extra_flags="-DSCANS_PER_SWIPE=$(SCANS_PER_SWIPE) -DMAX_MEMORY=$(MAX_MEMORY) -DINITIAL_CAPACITY=$(INITIAL_CAPACITY) -DDEBUG=$(DEBUG)"
