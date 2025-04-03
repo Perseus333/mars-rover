@@ -4,6 +4,9 @@
 [submodule "lib/ArduinoCore-avr"]
 	path = lib/ArduinoCore-avr
 	url = https://github.com/arduino/ArduinoCore-avr.git
-[submodule "lib/TB6612FNG"]
+[submodule "SparkFun_TB6612FNG_Arduino_Library"]
 	path = lib/TB6612FNG
+	url = https://github.com/sparkfun/SparkFun_TB6612FNG_Arduino_Library.git
+[submodule "lib/SparkFun_TB6612FNG_Arduino_Library"]
+	path = lib/SparkFun_TB6612FNG_Arduino_Library
 	url = https://github.com/sparkfun/SparkFun_TB6612FNG_Arduino_Library.git
