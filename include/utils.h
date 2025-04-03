@@ -4,6 +4,24 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+// Change this values by specifying them on the make command
+// Fallback for Makefile, usually this values aren't read
+#ifndef SCANS_PER_SWIPE
+#define SCANS_PER_SWIPE 10 // Increase for more accuracy but lower speeds
+#endif
+
+#ifndef MAX_MEMORY
+#define MAX_MEMORY 1020 // Affects memory usage
+#endif
+
+#ifndef INTIAL_CAPACITY
+#define INITIAL_CAPACITY 255 // 2^8-1; max values for 1 byte
+#endif
+
+#ifndef DEBUG
+#define DEBUG false
+#endif
+
 typedef struct DataPacket DataPacket;
 typedef struct Position Position;
 

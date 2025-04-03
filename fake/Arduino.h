@@ -5,6 +5,9 @@
 #define ARDUINO_H
 
 #include <stdint.h>
+#include <time.h>
+#include <stdlib.h>
+#include "constants.h"
 
 typedef uint8_t byte;
 
@@ -71,7 +74,9 @@ inline void delayMicroseconds(int time) {
 inline int pulseIn(byte pin, void* arg) {
     (void)pin;
     (void)arg;
-    return 0;
+    srand(clock());
+    int responseTime = rand() % MAX_RESPONSE_TIME;
+    return responseTime;
 }
 
 extern void* INPUT;

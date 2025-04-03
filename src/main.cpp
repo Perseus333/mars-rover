@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <math.h>
 /* `stdint.h` should be replaced with `arduino.h`
 As it's only purpose is to use the uint8_t datatype
@@ -26,53 +25,15 @@ Efficient memory management is crucial in microcontrollers
 angles and rotations: short (2 bytes)
 */
 
-// Change this values by specifying them on the make command
-// Fallback for Makefile, usually this values aren't read
-#ifndef SCANS_PER_SWIPE
-#define SCANS_PER_SWIPE 10 // Increase for more accuracy but lower speeds
-#endif
-
-#ifndef MAX_MEMORY
-#define MAX_MEMORY 1020 // Affects memory usage
-#endif
-
-#ifndef INTIAL_CAPACITY
-#define INITIAL_CAPACITY 255 // 2^8-1; max values for 1 byte
-#endif
-
-#ifndef DEBUG
-#define DEBUG false
-#endif
-
 // Initializing global variables
-Position currentPos;
+Position currentPos = {0, 0};
 Position* obstacles = NULL;
 unsigned short obstacleAmount = 0;
 short vehicleRotation = 0;
+short sensorRotation = 0;
 unsigned short obstacleCapacity = INITIAL_CAPACITY;
 // Sets all the elements in the grid as . for better visibility
 char grid[mapSideLength][mapSideLength] = {'.'};
-
-// Distance should be in mm
-short getDistanceTESTING() {
-    
-    //Temporary code - randomizes it
-    long responseTime = rand() % MAX_RESPONSE_TIME;
-    
-    // Temp Code for testing max values
-    // long responseTime = MAX_RESPONSE_TIME;
-
-    short distance; 
-    if (responseTime > MAX_RESPONSE_TIME) {
-        // sets distance to be 2^15 which is the max number of a `short` type
-        distance = (1 << 15) - 1;
-    }
-    else {
-        distance = (short)(responseTime / SPEED_OF_SOUND) * 2;
-    }
-
-    return distance;
-}
 
 short* scanEnvironment() {
     static short distanceReport[SCANS_PER_SWIPE];
@@ -141,13 +102,29 @@ void updateObstacleDisplay(short updateAmount) {
     grid[map(currentPos.y, MIN_SHORT_NUM, MAX_SHORT_NUM, 0,    mapSideLength - 1)]
         [map(currentPos.x, MIN_SHORT_NUM, MAX_SHORT_NUM, 0,    mapSideLength - 1)] = 'X';
 
+    // Prints the characters in the terminal
     for (int y = 0; y < mapSideLength; y++) {
         for (int x = 0; x < mapSideLength; x++) {
             putchar(grid[y][x]);
-            putchar(' ');
+            putchar('.');
         }
         putchar('\n');
     }
+}
+
+void updateObstacleMap(short* scanReport) {
+    short updateAmount = sizeof(scanReport);
+    
+    for (short index = 0; index < updateAmount; index++) {
+        DataPacket data;
+        data.obstacleDistance = scanReport[index];
+        data.sensorRotation = sensorRotation;
+        data.vehicleRotation = vehicleRotation;
+        data.currentPos = currentPos;
+        Position obstaclePos = generateObstacle(data);
+        appendObstacle(obstaclePos);
+    }
+    updateObstacleDisplay(SCANS_PER_SWIPE);
 }
 
 // Should probably return something
@@ -167,15 +144,11 @@ void mainSetup() {
     
     // Allocate memory for obstacles
     obstacles = (Position*)malloc(INITIAL_CAPACITY * sizeof(Position));
-
-    // TEMPORARY - To initialize the time for "random" numbers for `getDistance()`
-    // srand(clock());
 }
 
 // The loop function in arduino
 void mainLoop() {
-    scanEnvironment();
-    updateObstacleDisplay(SCANS_PER_SWIPE);
+    updateObstacleMap(scanEnvironment());
     pathFind();
     moveVehicle();
 }
@@ -190,8 +163,7 @@ int main() {
     for (;;) {
         mainLoop();
         // waits for user input (testing purposes only)
-        char ch = getchar();
-        if (ch) {} // To not raise compiler warning for unused variable
+        getchar();
     }
     
     return 0;
