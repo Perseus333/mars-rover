@@ -15,7 +15,7 @@ CFLAGS += -I./fake
 LDFLAGS = -lm
 
 # Source files
-SRC = src/main.cpp src/hardware.cpp src/utils.cpp lib\SparkFun_TB6612FNG_Arduino_Library\src\SparkFun_TB6612.cpp
+SRC = src/main.cpp src/hardware.cpp src/utils.cpp lib/SparkFun_TB6612FNG_Arduino_Library/src/SparkFun_TB6612.cpp
 
 #Arguments, default values
 SCANS_PER_SWIPE = 10
