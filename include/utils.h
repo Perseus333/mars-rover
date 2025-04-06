@@ -49,4 +49,7 @@ short map(short value, short initialLow, short initialHigh, short finalLow, shor
 // Converts angles from degrees to radians
 float toRadians(short angleInDegrees);
 
+// Calculates the distance between two objects
+unsigned short calcDistance(Position pos1, Position pos2);
+
 #endif // UTILS_HPP

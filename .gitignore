@@ -2,3 +2,4 @@ build/*
 !build/_.txt
 .vscode/
 TODO.md
+.pio

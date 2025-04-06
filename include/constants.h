@@ -7,6 +7,7 @@
 const float PI_NUM = 3.141592;
 const float SPEED_OF_SOUND = 0.343f; // mm/s
 const short FULL_ROTATION = 180; // in degrees
+const short MAX_SAFE_DISTANCE = 10; // mm
 
 const short MAX_RESPONSE_TIME = (short)((1 << 15) * SPEED_OF_SOUND / 2); // Avoid short overflow
 // `1 << 15` means that we shift the bit 1, 15 times. This results in the number 2^15

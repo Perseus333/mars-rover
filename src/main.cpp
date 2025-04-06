@@ -26,12 +26,12 @@ angles and rotations: short (2 bytes)
 */
 
 // Initializing global variables
-Position currentPos = {0, 0};
-Position* obstacles = NULL;
-unsigned short obstacleAmount = 0;
-short vehicleRotation = 0;
-short sensorRotation = 0;
-unsigned short obstacleCapacity = INITIAL_CAPACITY;
+Position currentPos;
+Position* obstacles;
+unsigned short obstacleAmount;
+short vehicleRotation;
+short sensorRotation;
+unsigned short obstacleCapacity;
 // Sets all the elements in the grid as . for better visibility
 char grid[mapSideLength][mapSideLength] = {'.'};
 
@@ -127,20 +127,85 @@ void updateObstacleMap(short* scanReport) {
     updateObstacleDisplay(SCANS_PER_SWIPE);
 }
 
-// Should probably return something
-void pathFind() {
-    // Add later
+void turnRight() {
+    motorBrake(1); // stops the right motor
+    motorDrive(2, 255, 1); // moves the left motor
+    delay (1);
 }
 
-void moveVehicle() {
-    // Add later
+void turnLeft() {
+    motorBrake(2); // stops the left motor
+    motorDrive(1, 255, 1); // moves the right motor
+    delay (1);
+}
+
+void pivot(Position nearestObstacle) {
+    uint8_t obstacleAvoided = 0;
+    short verticalDistance = nearestObstacle.y - currentPos.y;
+    // This means a right turn
+    if (verticalDistance > 0) {
+        while (obstacleAvoided == 0) {
+            turnRight();
+            // Once the obstacle is on the other side of the rover
+            // it means that it has completed it
+            if (nearestObstacle.y - currentPos.y < 0) {
+                obstacleAvoided = 1;
+            }
+            // else continue the while loop
+        }
+    }
+    // Requires a left turn otherwise
+    if (verticalDistance < 0) {
+        while (obstacleAvoided == 0) {
+            turnLeft();
+            // Once the obstacle is on the other side of the rover
+            // it means that it has completed it
+            if (nearestObstacle.y - currentPos.y > 0) {
+                obstacleAvoided = 1;
+            }
+        }
+    }
+    else {
+        // Faulty reading - avoid crash, don't pivot
+    }
+}
+
+// Selects which is the most optimal route
+void pathFind() {
+    // Safe guard mechanism
+    for (int obstacleIndex = 0; obstacleIndex < obstacleAmount; obstacleIndex++) {
+        Position obstacle = obstacles[obstacleIndex];
+        // gets the pythagorean distance to the obstacle
+        unsigned short distanceToObstacle = calcDistance(obstacle, currentPos);
+        if (distanceToObstacle < MAX_SAFE_DISTANCE) {
+            // Stops both motors
+            motorBrake(1);
+            motorBrake(2);
+
+            // Checks if it needs to pivot around a cone
+            // all cones are always in line with the
+            short horizontal_distance = obstacle.x - currentPos.x;
+            if (horizontal_distance < MAX_SAFE_DISTANCE) {
+                pivot(obstacle);
+            }
+        }
+        else {
+            // Drive forward for a small section of time
+            motorDrive(1, 255, 1);
+            motorDrive(2, 255, 1);
+        }
+    }
 }
 
 // The setup function in arduino
 void mainSetup() {
-
-    currentPos.x = 0;
-    currentPos.y = 0;
+    // Initializing global variables
+    Position currentPos = {0, 0};
+    Position* obstacles = NULL;
+    unsigned short obstacleAmount = 0;
+    short vehicleRotation = 0;
+    short sensorRotation = 0;
+    unsigned short obstacleCapacity = INITIAL_CAPACITY;
     
     // Allocate memory for obstacles
     obstacles = (Position*)malloc(INITIAL_CAPACITY * sizeof(Position));
@@ -150,20 +215,17 @@ void mainSetup() {
 void mainLoop() {
     updateObstacleMap(scanEnvironment());
     pathFind();
-    moveVehicle();
 }
 
-// The `main()` function, should be excluded when porting it to Arduino,
-// it's just here for testing purposes
+// The `main()` function, is excluded when building to Arduino,
+// it's just here for testing/debugging purposes
 int main() {
 
     mainSetup();
 
-    // same as `while true`, but without having to include stdbool.h
+    // same as `while true`, but without having to include stdbool.h (more memory efficient)
     for (;;) {
         mainLoop();
-        // waits for user input (testing purposes only)
-        getchar();
     }
     
     return 0;

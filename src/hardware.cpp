@@ -5,6 +5,7 @@
 #include <Servo.h>
 #include "utils.h"
 #include "constants.h"
+#include <SparkFun_TB6612.h>
 
 
 // You can paste the code below this into the arduino setup and it will work right off the bat
@@ -12,21 +13,30 @@
 // Defining the pins
 // The pins are based on ../assets/board_ref.jpg
 // F: forwards; B: backwards
-const byte ENABLE_RIGHT = 3;
-const byte RIGHT_B = 4;
-const byte RIGHT_F = 2;
 
-const byte ENABLE_LEFT = 9;
-const byte LEFT_B = 8;
-const byte LEFT_F = 10;
+const int PWMB = 9;
+const int BIN1 = 8;
+const int BIN2 = 10;
 
-const byte RIGHT_LED = 12;
-const byte LEFT_LED = 13;
+const int PWMA = 3;
+const int AIN1 = 2;
+const int AIN2 = 4;
+const int STBY = 12;
 
 const byte TRIG = 6;
 const byte ECHO = 5;
 
 const byte SERVO_PIN = 11;
+
+// Modify this values as needed from testing
+const byte offsetA = 1;
+const byte offsetB = 1;
+
+// Defining the motors
+// right motor
+Motor motorA = Motor(AIN1, AIN2, PWMA, offsetA, STBY);
+// left motor
+Motor motorB = Motor(BIN1, BIN2, PWMB, offsetB, STBY);
 
 unsigned short obstacleDistance;
 
@@ -40,9 +50,11 @@ int detectDistance() {
 	// Trigger
 	digitalWrite(TRIG, LOW);
 	digitalWrite(TRIG, HIGH);
+	// Defines the signal duration
 	delayMicroseconds(10);
 	digitalWrite(TRIG, LOW);
-
+	
+	// Waits for input in the ECHO pin
 	duration = pulseIn(ECHO, HIGH);
 
 	distance = duration * SPEED_OF_SOUND / 2;
@@ -82,32 +94,31 @@ void swipeScan(short *distanceReport) {
 // setup and loop functions are only for demonstrative purposes
 
 void hardwareSetup() {
-  
-	// Define all DC Motor pins as OUTPUT
-	pinMode(ENABLE_RIGHT, OUTPUT);
-	pinMode(RIGHT_B, OUTPUT);
-	pinMode(RIGHT_F, OUTPUT);
-	pinMode(ENABLE_LEFT, OUTPUT);
-	pinMode(LEFT_B, OUTPUT);
-	pinMode(LEFT_F, OUTPUT);
-
-	// Set all motors off at the beginning
-	digitalWrite(RIGHT_B, LOW);
-	digitalWrite(RIGHT_F, LOW);
-	digitalWrite(LEFT_B, LOW);
-	digitalWrite(LEFT_F, LOW);
 
 	// Sets trigger pins for sensor
 	pinMode(TRIG, OUTPUT);
     pinMode(ECHO, INPUT);
 
-	// Always max speed
-	analogWrite(ENABLE_LEFT, 255);
-	analogWrite(ENABLE_RIGHT, 255);
+	
 
 	// Initializes the Serial Monitor (terminal)
 	Serial.begin(9600);
 
 	sensorServo.attach(SERVO_PIN);
+}
 
+void motorDrive(byte motor, int speed, int duration) {
+	Motor selectedMotor = motorA;
+    if (motor == 2) {
+        selectedMotor = motorB; 
+    }
+	selectedMotor.drive(speed, duration);
+}
+
+void motorBrake(byte motor) {
+	Motor selectedMotor = motorA;
+    if (motor == 2) {
+        selectedMotor = motorB; 
+    }
+	selectedMotor.brake();
 }
