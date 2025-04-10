@@ -51,7 +51,7 @@ int detectDistance() {
 	digitalWrite(TRIG, LOW);
 	digitalWrite(TRIG, HIGH);
 	// Defines the signal duration
-	delayMicroseconds(10);
+	delayMicroseconds(15);
 	digitalWrite(TRIG, LOW);
 	
 	// Waits for input in the ECHO pin
@@ -108,7 +108,7 @@ void hardwareSetup() {
 }
 
 void motorDrive(byte motor, int speed, int duration) {
-	Motor selectedMotor = motorA;
+	Motor& selectedMotor = motorA;
     if (motor == 2) {
         selectedMotor = motorB; 
     }
@@ -116,7 +116,7 @@ void motorDrive(byte motor, int speed, int duration) {
 }
 
 void motorBrake(byte motor) {
-	Motor selectedMotor = motorA;
+	Motor& selectedMotor = motorA;
     if (motor == 2) {
         selectedMotor = motorB; 
     }

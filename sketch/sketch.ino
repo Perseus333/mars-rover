@@ -2,15 +2,16 @@
 // To enable compilation in arduino-cli
 
 #include "main.h"
-#include "../src/main.cpp"
 #include "hardware.h"
+#include "utils.h"
+#include "../src/main.cpp"
 #include "../src/hardware.cpp"
 #include "../src/utils.cpp"
 
 int turnNumber = 0;
 
 void setup() {
-    // mainSetup();
+    hardwareSetup();
 }
 
 void loop() {
