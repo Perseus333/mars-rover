@@ -7,14 +7,22 @@
 #include "../src/hardware.cpp"
 //#include "../src/utils.cpp"
 
+int count = 0;
+
 void setup() {
     // mainSetup();
 }
 
 void loop() {
+    count++;
     // mainLoop();
     while (detectDistance() > 200) {
         goForward(255, 1000);
     }
-    turnLeft(1000);
+    if (count % 2 == 0) {
+        turnLeft(1000);
+    }
+    else {
+        turnRight(1000);
+    }
 }
