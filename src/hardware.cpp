@@ -122,3 +122,20 @@ void motorBrake(byte motor) {
     }
 	selectedMotor.brake();
 }
+
+void goForward(int speed, int duration) {
+	forward(motorA, motorB, 255);
+	delay(duration);
+	motorBrake(1);
+	motorBrake(2);
+}
+
+void turnRight(int duration) {
+	motorDrive(1, -50, duration);
+	motorDrive(2, 255, duration);
+}
+
+void turnLeft(int duration) {
+	motorDrive(1, 255, duration);
+	motorDrive(2, -50, duration);
+}

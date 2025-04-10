@@ -13,12 +13,8 @@ void setup() {
 
 void loop() {
     // mainLoop();
-    if (detectDistance() < 200) {
-        motorBrake(1);
-        motorBrake(2);
+    while (detectDistance() > 200) {
+        goForward(255, 1000);
     }
-    else {
-        motorDrive(1, 255, 1000);
-        motorDrive(2, 255, 1000);
-    }
+    turnLeft(1000);
 }
