@@ -62,6 +62,9 @@ int detectDistance() {
 	// To avoid interferences from previous waves
 	delay(1);
 
+	Serial.println("detecting distance");
+	Serial.print(distance);
+
 	return distance;
 }
 
@@ -98,8 +101,6 @@ void hardwareSetup() {
 	// Sets trigger pins for sensor
 	pinMode(TRIG, OUTPUT);
     pinMode(ECHO, INPUT);
-
-	
 
 	// Initializes the Serial Monitor (terminal)
 	Serial.begin(9600);

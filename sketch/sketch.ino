@@ -15,10 +15,14 @@ void setup() {
 }
 
 void loop() {
+    Serial.println("looping");
     turnNumber++;
     while (detectDistance() < 100) {
-        goForward(255, 10);
+        Serial.print("going inside loop");
+        goForward(255, 1000);
+        Serial.print("going forwards");
     }
+    Serial.println("turning left");
     if (turnNumber % 2 == 0) {
         turnLeft(1000);
     }
