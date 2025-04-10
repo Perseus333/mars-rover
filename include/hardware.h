@@ -17,5 +17,7 @@ void goForward(int speed, int duration);
 void turnRight(int duration);
 // Turns the rover left
 void turnLeft(int duration);
+// Brakes both motors
+void brakeMotors();
 
 #endif // HARDWARE_H

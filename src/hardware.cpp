@@ -131,11 +131,13 @@ void goForward(int speed, int duration) {
 }
 
 void turnRight(int duration) {
-	motorDrive(1, -50, duration);
 	motorDrive(2, 255, duration);
 }
 
 void turnLeft(int duration) {
 	motorDrive(1, 255, duration);
-	motorDrive(2, -50, duration);
+}
+
+void brakeMotors() {
+	brake(motorA, motorB);
 }

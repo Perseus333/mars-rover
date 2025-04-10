@@ -17,10 +17,11 @@ void loop() {
     count++;
     // mainLoop();
     while (detectDistance() > 200) {
-        goForward(255, 10);
+        goForward(200, 100);
     }
+    brakeMotors();
     if (count % 2 == 0) {
-        turnLeft(1250);
+        turnLeft(1000);
     }
     else {
         turnRight(1250);
