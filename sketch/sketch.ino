@@ -1,24 +1,27 @@
 //main.ino
 // To enable compilation in arduino-cli
 
-//#include "main.h"
-//#include "../src/main.cpp"
+#include "main.h"
+#include "../src/main.cpp"
 #include "hardware.h"
 #include "../src/hardware.cpp"
-//#include "../src/utils.cpp"
+#include "../src/utils.cpp"
+
+int turnNumber = 0;
 
 void setup() {
     // mainSetup();
 }
 
 void loop() {
-    // mainLoop();
-    if (detectDistance() < 200) {
-        motorBrake(1);
-        motorBrake(2);
+    turnNumber++;
+    while (detectDistance() < 100) {
+        goForward(255, 10);
+    }
+    if (turnNumber % 2 == 0) {
+        turnLeft(1000);
     }
     else {
-        motorDrive(1, 255, 1000);
-        motorDrive(2, 255, 1000);
+        turnRight(1000);
     }
 }
