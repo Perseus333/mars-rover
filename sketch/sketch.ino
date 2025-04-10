@@ -17,12 +17,12 @@ void loop() {
     count++;
     // mainLoop();
     while (detectDistance() > 200) {
-        goForward(255, 1000);
+        goForward(255, 100);
     }
     if (count % 2 == 0) {
-        turnLeft(1000);
+        turnLeft(1500);
     }
     else {
-        turnRight(1000);
+        turnRight(1500);
     }
 }
